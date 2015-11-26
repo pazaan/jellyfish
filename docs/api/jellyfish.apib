@@ -14,7 +14,7 @@ Returns a status health check with a list of status of its dependencies.
 If the server is operating properly and all dependencies are up and
 running, returns 200 OK
 
-+ Response 200
++ Response 200 (text/plain)
 
     + Body
 
@@ -25,13 +25,40 @@ running, returns 200 OK
 ## POST /data/v1/device/upload/cl
 Deals with Carelink data fetching it and then storing the raw file for processing
 
-+ Response 403
++ Request
+
+    + Headers
+
+            x-tidepool-session-token : 23sadf87.123840.aasd90JKj
+            content-type : application/x-www-form-urlencoded
+
+    + Body
+        ```js
+        {
+            targetUserId: '7e881aec8f'
+            carelinkUsername: '<user-name>'
+            carelinkPassword: '<user-password>'
+            daysAgo: 180
+        }
+        ```
+
++ Response 200
+
+    + Body
+        ```js
+        {
+            id: "565763ed0ab440855cb15647",
+            status: "created"
+        }
+        ```
+
++ Response 403 (text/plain)
 
     + Body
 
         You do not have rights to upload this data
 
-+ Response 500
++ Response 500 (text/plain)
 
     + Body
 
@@ -40,68 +67,143 @@ Deals with Carelink data fetching it and then storing the raw file for processin
 ## GET /data/v1/synctasks/:id
 A sync status used when downloading the raw carelink data. It is used to indicate when the process has completed and the raw data can be processes.
 
++ Parameters
+    + id (required, string, `565763ed0ab440855cb15647`) - Id of the carelink data download
+
++ Request
+
+    + Headers
+
+            x-tidepool-session-token : 23sadf87.123840.aasd90JKj
+
 + Response 200
 
     + Body
 
         ```js
         {
-            id: ''
-            status:'',
-            reason:'',
-            error:'',
+            id: "565763ed0ab440855cb15647",
+            status: "pending"
         }
         ```
-
-+ Response 403
-
-    + Body
-
-        You do not have rights to view this data
-
-+ Response 404
-
-    + Body
-
-        No sync task found
-
-+ Response 500
-
-    + Body
-
-        Error getting permissions
-
-+ Response 500
-
-    + Body
-
-        Error getting sync task
-
-+ Response 500
-
-    + Body
-
-        Error getting user private data
-
-# Group Data
-
-## GET /data/v1/device/data/:id
-
-## POST /data/v1/data/?:groupId?
-
-Processed data that is ready to be uploaded to the tidepool platform
 
 + Response 200
 
     + Body
 
         ```js
-        [{
-         ...
-        }]
+        {
+            id: "565763ed0ab440855cb15647",
+            status: "success"
+        }
         ```
 
-+ Response 400
++ Response 403 (text/plain)
+
+    + Body
+
+        You do not have rights to view this data
+
++ Response 404 (text/plain)
+
+    + Body
+
+        No sync task found
+
++ Response 500 (text/plain)
+
+    + Body
+
+        Error getting permissions
+
++ Response 500 (text/plain)
+
+    + Body
+
+        Error getting sync task
+
++ Response 500 (text/plain)
+
+    + Body
+
+        Error getting user private data
+
+## GET /data/v1/device/data/:id
+Get the raw carelink data the we have downloaded for the user
+
++ Parameters
+    + id (required, string, `565763ed0ab440855cb15647`) - Id of the carelink data download
+
++ Request
+
+    + Headers
+
+            x-tidepool-session-token : 23sadf87.123840.aasd90JKj
+
++ Response 200
+
+    + Body
+
+        ```
+        Medtronic Diabetes CareLink Personal Data Export File (v1.0.1)
+        PATIENT INFO
+        Name,Tester
+        Report Range,5/30/15,to,11/26/15
+        DEVICE INFO
+        Data Exported on,11/26/15 7:56 PM
+        DEVICE DATA (2000 records)
+        Data Range,n/a,to,n/a
+        Index,Date,Time,Timestamp,New Device Time,BG Reading (mg/dL),Linked BG Meter ID,Temp Basal Amount (U/h),Temp Basal Type,Temp Basal Duration (hh:mm:ss),Bolus Type,Bolus Volume Selected (U),Bolus Volume Delivered (U),Bolus Duration (hh:mm:ss),Prime Type,Prime Volume Delivered (U),Suspend,Rewind,BWZ Estimate (U),BWZ Target High BG (mg/dL),BWZ Target Low BG (mg/dL),BWZ Carb Ratio (grams),BWZ Insulin Sensitivity (mg/dL),BWZ Carb Input (grams),BWZ BG Input (mg/dL),BWZ Correction Estimate (U),BWZ Food Estimate (U),BWZ Active Insulin (U),Alarm,Sensor Calibration BG (mg/dL),Sensor Glucose (mg/dL),ISIG Value,Daily Insulin Total (U),Raw-Type,Raw-Values,Raw-ID,Raw-Upload ID,Raw-Seq Num,Raw-Device Type
+
+        ....
+
+        ```
+
+# Group Data
+
+
+## POST /data/v1/data/?:groupId?
+
+Processed data that is ready to be uploaded to the tidepool platform
+
++ Request
+
+    + Headers
+
+            x-tidepool-session-token : 23sadf87.123840.aasd90JKj
+
+    + Body
+
+        ```js
+        {
+            byUser: "7e881aec8f"
+            computerTime: "2015-11-27T08:49:29"
+            conversionOffset: 0
+            deviceId: "InsOmn-130077329"
+            deviceManufacturers: ["Insulet", "Abbott"]
+            deviceModel: "OmniPod"
+            deviceSerialNumber: "xxxxxxxxx"
+            deviceTags: ["insulin-pump", "bgm"]
+            guid: "609488db-2418-42b7-b77a-01706d38f398"
+            time: "2015-11-27T08:49:29+13:00"
+            timeProcessing: "utc-bootstrapping"
+            timezone: "US/Pacific"
+            timezoneOffset: 780
+            type: "upload"
+            uploadId: "upid_5b5dd2db1f39"
+            version: "tidepool-uploader 0.222.0"
+        }
+        ```
+
++ Response 200
+
+    + Body
+
+        ```js
+        [] //lists the count of any duplicates
+        ```
+
++ Response 400 (text/plain)
 
     + Body
 
