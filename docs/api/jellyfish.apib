@@ -1,0 +1,122 @@
+FORMAT: 1A
+HOST: http://api.tidepool.io
+
+# Tidepool Device Data Ingestion API
+
+## Overview
+
+The api ingestes device data that matches our data model.
+
+# Group Status
+
+## GET /status
+Returns a status health check with a list of status of its dependencies.
+If the server is operating properly and all dependencies are up and
+running, returns 200 OK
+
++ Response 200
+
+    + Body
+
+        OK
+
+# Group Raw Carelink Data
+
+## POST /data/v1/device/upload/cl
+Deals with Carelink data fetching it and then storing the raw file for processing
+
++ Response 403
+
+    + Body
+
+        You do not have rights to upload this data
+
++ Response 500
+
+    + Body
+
+        Error getting permissions
+
+## GET /data/v1/synctasks/:id
+A sync status used when downloading the raw carelink data. It is used to indicate when the process has completed and the raw data can be processes.
+
++ Response 200
+
+    + Body
+
+        ```js
+        {
+            id: ''
+            status:'',
+            reason:'',
+            error:'',
+        }
+        ```
+
++ Response 403
+
+    + Body
+
+        You do not have rights to view this data
+
++ Response 404
+
+    + Body
+
+        No sync task found
+
++ Response 500
+
+    + Body
+
+        Error getting permissions
+
++ Response 500
+
+    + Body
+
+        Error getting sync task
+
++ Response 500
+
+    + Body
+
+        Error getting user private data
+
+# Group Data
+
+## GET /data/v1/device/data/:id
+
+## POST /data/v1/data/?:groupId?
+
+Processed data that is ready to be uploaded to the tidepool platform
+
++ Response 200
+
+    + Body
+
+        ```js
+        [{
+         ...
+        }]
+        ```
+
++ Response 400
+
+    + Body
+
+        Expected an object body, got[%s]
+
++ Response 403
+
+    + Body
+
+        ```js
+        {
+            status:'403',
+            reason:'You don't have rights to upload to that account.'
+        }
+        ```
+
++ Response 500
+
